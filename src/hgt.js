@@ -39,32 +39,37 @@ Hgt.nearestNeighbour = function(row, col) {
 Hgt.bilinear = function(row, col) {
     var avg = function(v1, v2, f) {
             return v1 + (v2 - v1) * f;
-    },
+    };
 	
-	rowLow = Math.floor(row),
+    var rowLow = Math.floor(row),
 	rowHi = rowLow + 1,
 	rowFrac = row - rowLow,
 	colLow = Math.floor(col),
 	colHi = colLow + 1,
-	colFrac = col - colLow,
-	v00 = this._rowCol(rowLow, colLow),
+	colFrac = col - colLow;
+	
+    var v00 = this._rowCol(rowLow, colLow),
 	v10 = this._rowCol(rowLow, colHi),
 	v11 = this._rowCol(rowHi, colHi),
-	v01 = this._rowCol(rowHi, colLow),
-	v1 = avg(v00, v10, colFrac),
-	v2 = avg(v01, v11, colFrac);
-
-    var dzdx = v00 - v10,
-	dzdy = v01 - v11,
-	dx;
+	v01 = this._rowCol(rowHi, colLow);
+	
+    var vl = avg(v00, v10, colFrac),
+	vr = avg(v01, v11, colFrac),
+	vu = avg(v00, v01, rowFrac),
+	vo = avg(v10, v11, rowFrac);
+      
+    var dzdx = vr - vl,
+	dzdy = vo - vu;
     
-    if(this._resolution == 1){dx = 30} else {dx = 90}
+    var dx = 90;
+ 
+    if(this._resolution == 1)dx = 30;
     
     var slope = Math.sqrt(dzdx*dzdx + dzdy*dzdy) / dx,
 	aspect = Math.atan2(dzdy, dzdx),
-	elevation=avg(v1, v2, rowFrac);
+	elevation=avg(vr, vl, rowFrac);
 
-    // do some unneeded things
+    // do some unneeded stuff
     slope*=100
     slope=Math.round(slope);
     if(aspect<0)aspect=2*Math.PI+aspect;
