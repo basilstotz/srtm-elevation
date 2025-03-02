@@ -54,15 +54,20 @@ Hgt.bilinear = function(row, col) {
     v1 = avg(v00, v10, colFrac),
     v2 = avg(v01, v11, colFrac);
 
-    if(this._resolution == 1){ dx=30 } else { dx=90 }
+    if(this._resolution == 1){
+	dx = 30
+    } else {
+	dx = 90
+    }
     dy = dx;
     
     dzdx = v00 - v10 
     dzdy = v01 - v11
 		      
-    slope = (1.0/dx)*Math.sqrt( dzdx*dzdx + dzdy*dzdy );
+    slope = Math.sqrt(dzdx*dzdx + dzdy*dzdy) / dx;
     aspect = Math.atan2(dzdy, dzdx)
-    ele=avg(v1, v2, rowFrac)
+
+    elevation=avg(v1, v2, rowFrac)
 
     // do some unneeded things
     slope*=100
@@ -88,7 +93,7 @@ Hgt.bilinear = function(row, col) {
     // console.log('v1 = ' + v1);
     // console.log('v2 = ' + v2);
 
-    return { ele: ele, slope: slope, aspect: aspect }
+    return { ele: elevation, slope: slope, aspect: aspect }
 };
 
 Hgt.prototype.destroy = function() {
