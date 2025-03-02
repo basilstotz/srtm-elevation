@@ -41,33 +41,28 @@ Hgt.bilinear = function(row, col) {
             return v1 + (v2 - v1) * f;
     },
 	
-    rowLow = Math.floor(row),
-    rowHi = rowLow + 1,
-    rowFrac = row - rowLow,
-    colLow = Math.floor(col),
-    colHi = colLow + 1,
-    colFrac = col - colLow,
-    v00 = this._rowCol(rowLow, colLow),
-    v10 = this._rowCol(rowLow, colHi),
-    v11 = this._rowCol(rowHi, colHi),
-    v01 = this._rowCol(rowHi, colLow),
-    v1 = avg(v00, v10, colFrac),
-    v2 = avg(v01, v11, colFrac);
+	rowLow = Math.floor(row),
+	rowHi = rowLow + 1,
+	rowFrac = row - rowLow,
+	colLow = Math.floor(col),
+	colHi = colLow + 1,
+	colFrac = col - colLow,
+	v00 = this._rowCol(rowLow, colLow),
+	v10 = this._rowCol(rowLow, colHi),
+	v11 = this._rowCol(rowHi, colHi),
+	v01 = this._rowCol(rowHi, colLow),
+	v1 = avg(v00, v10, colFrac),
+	v2 = avg(v01, v11, colFrac);
 
-    if(this._resolution == 1){
-	dx = 30
-    } else {
-	dx = 90
-    }
-    dy = dx;
+    var dzdx = v00 - v10,
+	dzdy = v01 - v11,
+	dx;
     
-    dzdx = v00 - v10 
-    dzdy = v01 - v11
-		      
-    slope = Math.sqrt(dzdx*dzdx + dzdy*dzdy) / dx;
-    aspect = Math.atan2(dzdy, dzdx)
-
-    elevation=avg(v1, v2, rowFrac)
+    if(this._resolution == 1){dx = 30} else {dx = 90}
+    
+    var slope = Math.sqrt(dzdx*dzdx + dzdy*dzdy) / dx,
+	aspect = Math.atan2(dzdy, dzdx),
+	elevation=avg(v1, v2, rowFrac);
 
     // do some unneeded things
     slope*=100
@@ -75,7 +70,7 @@ Hgt.bilinear = function(row, col) {
     if(aspect<0)aspect=2*Math.PI+aspect;
     aspect=aspect*180/Math.PI;
     aspect=Math.round(aspect);
-    ele =Math.round(ele);
+    elevation =Math.round(elevation);
 
     //console.log('dzdx=' + dzdx+' dzdy=' + dzdy+' aspect='+asp );
     // console.log('row = ' + row);
