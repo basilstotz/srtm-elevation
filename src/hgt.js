@@ -39,20 +39,40 @@ Hgt.nearestNeighbour = function(row, col) {
 Hgt.bilinear = function(row, col) {
     var avg = function(v1, v2, f) {
             return v1 + (v2 - v1) * f;
-        },
-        rowLow = Math.floor(row),
-        rowHi = rowLow + 1,
-        rowFrac = row - rowLow,
-        colLow = Math.floor(col),
-        colHi = colLow + 1,
-        colFrac = col - colLow,
-        v00 = this._rowCol(rowLow, colLow),
-        v10 = this._rowCol(rowLow, colHi),
-        v11 = this._rowCol(rowHi, colHi),
-        v01 = this._rowCol(rowHi, colLow),
-        v1 = avg(v00, v10, colFrac),
-        v2 = avg(v01, v11, colFrac);
+    },
+	
+    rowLow = Math.floor(row),
+    rowHi = rowLow + 1,
+    rowFrac = row - rowLow,
+    colLow = Math.floor(col),
+    colHi = colLow + 1,
+    colFrac = col - colLow,
+    v00 = this._rowCol(rowLow, colLow),
+    v10 = this._rowCol(rowLow, colHi),
+    v11 = this._rowCol(rowHi, colHi),
+    v01 = this._rowCol(rowHi, colLow),
+    v1 = avg(v00, v10, colFrac),
+    v2 = avg(v01, v11, colFrac);
 
+    if(this._resolution == 1){ dx=30 } else { dx=90 }
+    dy = dx;
+    
+    dzdx = v00 - v10 
+    dzdy = v01 - v11
+		      
+    slope = (1.0/dx)*Math.sqrt( dzdx*dzdx + dzdy*dzdy );
+    aspect = Math.atan2(dzdy, dzdx)
+    ele=avg(v1, v2, rowFrac)
+
+    // do some unneeded things
+    slope*=100
+    slope=Math.round(slope);
+    if(aspect<0)aspect=2*Math.PI+aspect;
+    aspect=aspect*180/Math.PI;
+    aspect=Math.round(aspect);
+    ele =Math.round(ele);
+
+    //console.log('dzdx=' + dzdx+' dzdy=' + dzdy+' aspect='+asp );
     // console.log('row = ' + row);
     // console.log('col = ' + col);
     // console.log('rowLow = ' + rowLow);
@@ -68,7 +88,7 @@ Hgt.bilinear = function(row, col) {
     // console.log('v1 = ' + v1);
     // console.log('v2 = ' + v2);
 
-    return avg(v1, v2, rowFrac);
+    return { ele: ele, slope: slope, aspect: aspect }
 };
 
 Hgt.prototype.destroy = function() {
